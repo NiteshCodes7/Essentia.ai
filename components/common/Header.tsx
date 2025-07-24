@@ -12,7 +12,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -20,12 +19,12 @@ import {
 type User = {
   full_name: string;
   email: string;
+  avatar?: string;
 };
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 
   const handleLogOut = async () => {
@@ -46,7 +45,7 @@ const Header = () => {
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
-        const res = await axios.get("/api/check-auth");
+        const res = await axios.get("/api/check-auth", { withCredentials: true });
         if (res.status === 200 && res.data.loggedIn) {
           setUser(res.data.user);
           setIsLoggedIn(true);
@@ -62,8 +61,8 @@ const Header = () => {
     checkLoginStatus();
   }, []);
 
-  const getUserInitials = (full_name: string) => {
-    if (!full_name) return "U";
+  const getUserInitials = (full_name?: string) => {
+    if (!full_name) return "👤";
     const names = full_name.trim().split(" ");
     return (names[0]?.[0] || "") + (names[1]?.[0] || "");
   };
@@ -90,22 +89,32 @@ const Header = () => {
       <div className="flex lg:justify-end lg:flex-1">
         {isLoggedIn ? (
           <div className="flex items-center gap-5">
-            <NavLink href="/upload" className="hidden md:block">Upload a PDF</NavLink>
+            <NavLink href="/upload" className="hidden md:block">
+              Upload a PDF
+            </NavLink>
 
             <div className="hidden md:block">Pro</div>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button className="rounded-full w-10 h-10 bg-gray-200 text-black flex items-center justify-center hover:bg-rose-50">
-                  {user && getUserInitials(user.full_name)}
+                <Button className="relative rounded-full w-10 h-10 bg-gray-200 text-black flex items-center justify-center overflow-hidden hover:bg-rose-50">
+                  {user?.avatar ? (
+                    <div className="absolute inset-0">
+                      <Image
+                        src={user.avatar}
+                        alt="avatar"
+                        fill
+                        className="object-cover rounded-full"
+                      />
+                    </div>
+                  ) : (
+                    getUserInitials(user?.full_name)
+                  )}
                 </Button>
               </DropdownMenuTrigger>
 
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem
-                  disabled
-                  className="text-bl cursor-default"
-                >
+                <DropdownMenuItem disabled className="text-bl cursor-default">
                   <div className="flex flex-col">
                     <p className="font-bold text-md">My Account</p>
                     <p className="text-xs">{user?.full_name}</p>
@@ -114,8 +123,12 @@ const Header = () => {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
 
-                <DropdownMenuItem className="block md:hidden"><NavLink href="/upload">Upload a PDF</NavLink></DropdownMenuItem>
-                <DropdownMenuItem className="block md:hidden">Pro</DropdownMenuItem>
+                <DropdownMenuItem className="block md:hidden">
+                  <NavLink href="/upload">Upload a PDF</NavLink>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="block md:hidden">
+                  Pro
+                </DropdownMenuItem>
                 <DropdownMenuSeparator className="block md:hidden" />
                 <DropdownMenuItem
                   variant={"destructive"}

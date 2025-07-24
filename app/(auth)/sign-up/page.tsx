@@ -9,6 +9,7 @@ import { Loader2, Eye, EyeOff } from "lucide-react";
 import OtpInput from "@/components/verify-otp";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { GoogleLoginButton } from "@/components/OAuthLogin";
 
 export default function SignupPage() {
   const [form, setForm] = useState({
@@ -225,6 +226,12 @@ export default function SignupPage() {
           )}
         </Button>
       </div>
+
+      <div className="text-center font-bold text-rose-400">OR</div>
+      
+            <div className="text-center">
+              <GoogleLoginButton />
+            </div>
 
       <hr className="border-1" />
 

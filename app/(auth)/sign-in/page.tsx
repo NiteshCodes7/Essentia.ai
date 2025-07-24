@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { GoogleLoginButton } from "@/components/OAuthLogin";
 
 export default function SigninPage() {
   const [form, setForm] = useState({
@@ -149,6 +150,13 @@ export default function SigninPage() {
           "Sign In"
         )}
       </Button>
+
+
+      <div className="text-center font-bold text-rose-400">OR</div>
+
+      <div className="text-center">
+        <GoogleLoginButton />
+      </div>
 
       <hr className="border-1" />
 
