@@ -23,7 +23,7 @@ Essentia.ai is a **SaaS web application** that converts PDF documents into short
 | Backend    | `Node.js`, `Next.js API Routes`                  |
 | Auth       | `NextAuth.js` / `JWT`                            |
 | Payments   | `Razorpay`                                       |
-| AI         | `OpenAI API` for summarization                   |
+| AI         | `Gemini API` for summarization                   |
 | Video      | `FFmpeg` or browser-based rendering (text only)  |
 
 ---

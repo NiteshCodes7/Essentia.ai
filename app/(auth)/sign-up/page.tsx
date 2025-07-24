@@ -6,8 +6,7 @@ import { useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
 import { Loader2, Eye, EyeOff } from "lucide-react";
-import OtpInput from "../verify-otp/page";
-import bcrypt from "bcryptjs";
+import OtpInput from "@/components/verify-otp";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 

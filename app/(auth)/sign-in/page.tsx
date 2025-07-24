@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import axios from "axios";
+import OtpInput from "@/components/verify-otp";
 import { toast } from "sonner";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -17,6 +18,7 @@ export default function SigninPage() {
 
   const [loading, setLoading] = useState(false);
   const [seePass, setSeePass] = useState(false);
+  const [otpOpen, setOtpOpen] = useState(false);
 
   const router = useRouter();
 
@@ -27,21 +29,47 @@ export default function SigninPage() {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      const res = await axios.post("auth/sign-in", {
+      const res = await axios.post("api/sign-in", {
         email: form.email,
         password: form.password,
       });
 
-      if (res.data.status === 200) router.push("/");
+      if (res.status === 200) {
+        setOtpOpen(true);
+        toast(res.data.message)
+      }
+      else toast("❌ Wrong Password. Please try with correct password");
 
     } catch (error) {
-      toast("❌ Signin failed. Please try again");
+      toast("❌ Wrong Password. Please try with correct password");
       console.log(error);
 
     } finally {
       setLoading(false);
     }
   };
+
+  const handleVerifyOtp = async (otp: string) => {
+      setLoading(true);
+      try {
+        const res = await axios.post("/api/signIn-verify-Otp", {
+          email: form.email,
+          otp,
+        });
+  
+        if (res.status === 200) {
+          toast("✅ Account verified successfully!");
+          setOtpOpen(false);
+          router.push("/");
+        } else {
+          toast("❌ OTP verification failed.");
+        }
+      } catch (err: any) {
+        toast("❌ OTP verification failed.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
   return (
     <div className="w-full max-w-md mx-auto bg-white p-6 rounded-2xl shadow-lg space-y-6 animate-in fade-in slide-in-from-bottom-6">
@@ -132,6 +160,13 @@ export default function SigninPage() {
           </Link>
         </p>
       </div>
+
+      <OtpInput 
+        email={form.email}
+        open={otpOpen}
+        onClose={() => setOtpOpen(false)}
+        onVerify={handleVerifyOtp}
+      />
     </div>
   );
 }
