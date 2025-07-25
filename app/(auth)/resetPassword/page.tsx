@@ -89,6 +89,7 @@ export default function resetPassword() {
             name="email"
             onChange={handleChange}
             value={form.email}
+            required
           />
         </div>
       </div>
