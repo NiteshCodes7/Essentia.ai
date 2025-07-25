@@ -182,6 +182,10 @@
   animation: shake 0.8s ease-in-out;
 }
 
+.custom-toaster {
+  top: 4.5rem !important;
+}
+
 }
 
 @utility container {

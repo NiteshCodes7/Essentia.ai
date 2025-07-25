@@ -97,6 +97,7 @@ export default function SigninPage() {
             name="email"
             onChange={handleChange}
             value={form.email}
+            required
           />
         </div>
       </div>
@@ -115,6 +116,7 @@ export default function SigninPage() {
           name="password"
           onChange={handleChange}
           value={form.password}
+          required
         />
         <div className="text-right text-xs text-gray-700 mt-2 h-5">
         <p>

@@ -101,6 +101,7 @@ export default function changePassword() {
           name="password"
           onChange={handleChange}
           value={form.password}
+          required
         />
         <div
           onClick={() => setSeePass(!seePass)}
@@ -138,6 +139,7 @@ export default function changePassword() {
           name="confirmPassword"
           onChange={handleChange}
           value={form.confirmPassword}
+          required
         />
         {isConfirmPassCorrect && (
           <div className="mt-1 text-xs text-red-500">
