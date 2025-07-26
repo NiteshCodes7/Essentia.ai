@@ -7,17 +7,19 @@ import { useUploadThing } from "@/utils/uploadThing";
 import { toast } from "sonner";
 import { CircleX } from "lucide-react";
 import { generatePdfSummary } from "@/actions/upload-actions";
+import axios from "axios";
 
 const UploadForm = () => {
-  const [isLoading, setIsLoadinng] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
-  const { startUpload, routeConfig } = useUploadThing("pdfUploader", {
+
+  const { startUpload } = useUploadThing("pdfUploader", {
     onClientUploadComplete: () => {
-      console.log("uploaded successfully!");
+      console.log("Upload completed.");
     },
     onUploadError: (err) => {
-      console.error("error occurred while uploading", err);
-      toast("❌ Error occured while uploading", {
+      console.error("Upload error:", err);
+      toast("❌ Error occurred while uploading", {
         description: err.message,
         action: {
           label: <CircleX />,
@@ -26,112 +28,108 @@ const UploadForm = () => {
       });
     },
     onUploadBegin: (file) => {
-      console.log("upload has begun for", file);
+      console.log("Uploading:", file);
     },
   });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoadinng(true);
+    setIsLoading(true);
 
     try {
-      const fromData = new FormData(e.currentTarget);
-      const file = fromData.get("file") as File;
+      const formData = new FormData(e.currentTarget);
+      const file = formData.get("file") as File;
 
+      // ✅ Validate file
       const schema = z.object({
         file: z
           .instanceof(File, { message: "Invalid file" })
-          .refine(
-            (file) => file.size <= 20 * 1024 * 1024,
-            "File size should be less than 20MB"
-          )
-          .refine(
-            (file) => file.type.startsWith("application/pdf"),
-            "File must be a PDF"
-          ),
+          .refine((f) => f.size <= 20 * 1024 * 1024, "Max size 20MB")
+          .refine((f) => f.type === "application/pdf", "Must be a PDF"),
       });
 
-      const validatedFields = schema.safeParse({ file });
-      toast("📄 Uploading PDF", {
-        description: "Hang tight! you PDF is uploading...",
-        action: {
-          label: <CircleX />,
-          onClick: () => {},
-        },
-      });
+      const validated = schema.safeParse({ file });
 
-      console.log(validatedFields);
-
-      if (!validatedFields.success) {
-        toast("❌ Something went wrong.", {
-          description: "Invalid file",
-          action: {
-            label: <CircleX />,
-            onClick: () => {},
-          },
-        });
-        console.log(
-          validatedFields.error.flatten().fieldErrors.file?.[0] ??
-            "Invalid file"
-        );
-        return;
-      }
-
-      const resp = await startUpload([file]);
-      if (!resp) {
-        toast("❌ Something went wrong", {
-          description: "Please use a different file",
-          action: {
-            label: <CircleX />,
-            onClick: () => {},
-          },
+      if (!validated.success) {
+        toast("❌ Invalid File", {
+          description: validated.error.errors[0].message,
         });
         return;
       }
 
-      toast("📄 Processing PDF", {
-        description: "Hang tight! Our AI is reading through your document...",
-        action: {
-          label: <CircleX />,
-          onClick: () => {},
-        },
+      toast("📤 Uploading PDF...", {
+        description: "Hang tight while we upload your PDF.",
       });
 
-      const result = await generatePdfSummary([resp[0]]);
-      console.log({ result });
-
-      const { data = null, message = null } = result || {};
-
-      if (data) {
-        toast("📄 Saving PDF...", {
-          description: "Hang tight! we are saving your summary! ✨",
-          action: {
-            label: <CircleX />,
-            onClick: () => {},
-          },
+      const uploadResponse = await startUpload([file]);
+      if (!uploadResponse) {
+        toast("❌ Upload Failed", {
+          description: "Try using a different PDF.",
         });
+        return;
+      }
 
+      const uploadedFile = uploadResponse[0];
+
+      toast("📄 Generating Summary...", {
+        description: "Our AI is processing your document.",
+      });
+
+      const summaryResult = await generatePdfSummary([uploadedFile]);
+      const { data, message } = summaryResult || {};
+
+      if (!data) {
+        toast("❌ Summary Failed", {
+          description: message || "Could not generate summary.",
+        });
+        return;
+      }
+
+      // ✅ Get logged-in user ID
+      const authRes = await axios.get("/api/check-auth");
+      const userId = authRes.data?.user?._id;
+      if (!userId) {
+        toast("❌ Authentication Error", {
+          description: "User not logged in.",
+        });
+        return;
+      }
+
+      toast("💾 Saving to DB...", {
+        description: "Saving your PDF summary to dashboard...",
+      });
+
+      // ✅ Save to MongoDB
+      const saveRes = await axios.post("/api/save-summary", {
+        user_id: userId,
+        original_file_url: uploadedFile.ufsUrl,
+        file_name: uploadedFile.name,
+        title: uploadedFile.name.replace(".pdf", ""),
+        summary_text: data.summary,
+        status: "completed",
+      });
+
+      if (saveRes.data?.success) {
+        toast("✅ Saved Successfully", {
+          description: "View it in your dashboard.",
+        });
         formRef.current?.reset();
-        
-        if(data.summary){
-          toast("✨ Summary Generated.", {
-          description: "Please go through your AI generated summary!",
-          action: {
-            label: <CircleX />,
-            onClick: () => {},
-          },
+      } else {
+        toast("❌ Save Failed", {
+          description: saveRes.data?.message || "Try again later.",
         });
-          console.log(data.summary);
-
-          //save ssummary to database
-        }
       }
+
     } catch (error) {
-      console.log("Errro occured", error);
-      setIsLoadinng(false);
+      console.error("Upload error:", error);
+      toast("❌ Unexpected Error", {
+        description: "Check console for details.",
+      });
       formRef.current?.reset();
-    } finally{
-      setIsLoadinng(false);
+
+    } finally {
+      setIsLoading(false);
+      formRef.current?.reset();
     }
   };
 

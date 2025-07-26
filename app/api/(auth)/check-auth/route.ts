@@ -16,7 +16,7 @@ export async function GET() {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: string };
 
-    const user = await User.findById(decoded.id).select("full_name email avatar");
+    const user = await User.findById(decoded.id).select("_id full_name email avatar");
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
