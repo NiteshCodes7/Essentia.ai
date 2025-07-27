@@ -1,4 +1,4 @@
-import { Schema, model, Document, Types } from 'mongoose';
+import { Schema, model, Document, Types, models } from 'mongoose';
 
 export interface IPdfSummary extends Document {
   user_id: Types.ObjectId;
@@ -22,4 +22,16 @@ const pdfSummarySchema = new Schema<IPdfSummary>({
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 });
 
-export const PdfSummary = model<IPdfSummary>('PdfSummary', pdfSummarySchema);
+export const PdfSummary = models.PdfSummary || model<IPdfSummary>('PdfSummary', pdfSummarySchema);
+
+// if (model is already defined) {
+//    use the existing one ✅
+// } else {
+//    define the model now ❗
+// }
+
+// | Code                                    | Meaning                                                            |    |                                                   |
+// | --------------------------------------- | ------------------------------------------------------------------ | -- | ------------------------------------------------- |
+// | `models.PdfSummary`                     | Checks if the model already exists in the Mongoose global registry |    |                                                   |
+// | `model('PdfSummary', pdfSummarySchema)` | Only runs if it hasn't been defined yet                            |    |                                                   |
+// | \`                                      |                                                                    | \` | Prevents redefinition and the OverwriteModelError |
