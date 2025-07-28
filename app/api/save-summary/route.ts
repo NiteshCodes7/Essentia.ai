@@ -20,16 +20,19 @@ export async function POST(req: NextRequest) {
       }, { status: 409});
     }
 
+    const words = body.summary_text.trim().split(" ").filter((word: string) => word !== "");
+
     const summary = await PdfSummary.create({
       user_id: body.user_id,
       original_file_url: body.original_file_url,
       file_name: body.file_name,
       title: body.title,
       summary_text: body.summary_text,
+      word_count: words.length,
       status: body.status,
     });
 
-    return NextResponse.json({ success: true, data: summary }, { status: 200 });
+    return NextResponse.json({ success: true, summary }, { status: 200 });
   } catch (error) {
     console.error("DB save error:", error);
     return NextResponse.json(

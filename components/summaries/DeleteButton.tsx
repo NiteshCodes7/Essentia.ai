@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Loader, Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,10 +16,12 @@ import { toast } from "sonner";
 
 const DeleteButton = ({ id, onDelete } : { id : string; onDelete : (id: string) => void }) => {
   const[open, setOpen] = useState(false);
+  const[ isPending, setIsPending ] = useState(false);
 
   const handleDelete = async () => {
     try {
       setOpen(true);
+      setIsPending(true);
 
       const res = await axios.post("/api/delete-summary",
         { id }
@@ -40,6 +42,7 @@ const DeleteButton = ({ id, onDelete } : { id : string; onDelete : (id: string) 
 
     }finally{
       setOpen(false);
+      setIsPending(false);
     }
 }
 
@@ -73,7 +76,13 @@ const DeleteButton = ({ id, onDelete } : { id : string; onDelete : (id: string) 
           className="bg-gray-900 hover:bg-gray-600"
           onClick={handleDelete}
         >
-          Delete
+          {isPending ? (
+            <>
+              <Loader className="animate-spin" /> Deleting...
+            </>
+          ) : (
+            "Delete"
+          )}
         </Button>
         </DialogFooter>
       </DialogContent>

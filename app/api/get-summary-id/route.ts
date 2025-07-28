@@ -1,6 +1,5 @@
 import { connect } from "@/db/config";
 import { PdfSummary } from "@/models/PdfSummary.model";
-import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -8,18 +7,25 @@ export async function POST(req: NextRequest) {
     await connect();
 
     const body = await req.json();
-    const userId = body?.id
+    const _id = body?.id
 
-    if (!userId) {
+    if (!_id) {
       return NextResponse.json(
-        { error: "User ID is required" },
+        { error: "ID is required" },
         { status: 400 }
       );
     }
 
-    const summaries = await PdfSummary.find({ user_id: new mongoose.Types.ObjectId(userId) }).sort({createdAt: -1,});
+    const summary = await PdfSummary.findById(_id);
 
-    return NextResponse.json({ summaries }, { status: 200 });
+    if(!summary){
+      return NextResponse.json(
+        { error: "Invalid ID" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ summary }, { status: 200 });
 
   } catch (error) {
     console.error("Error fetching summary:", error); 

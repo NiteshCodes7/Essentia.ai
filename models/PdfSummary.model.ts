@@ -7,6 +7,7 @@ export interface IPdfSummary extends Document {
   status?: string;
   title?: string;
   file_name?: string;
+  word_count?: number;
   created_at: Date;
   updated_at: Date;
 }
@@ -17,7 +18,8 @@ const pdfSummarySchema = new Schema<IPdfSummary>({
   summary_text: { type: String },
   status: { type: String },
   title: { type: String },
-  file_name: { type: String }
+  file_name: { type: String },
+  word_count: { type: Number },
 }, {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 });

@@ -8,10 +8,12 @@ import { toast } from "sonner";
 import { CircleX } from "lucide-react";
 import { generatePdfSummary } from "@/actions/upload-actions";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const UploadForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const router = useRouter();
 
   const { startUpload } = useUploadThing("pdfUploader", {
     onClientUploadComplete: () => {
@@ -113,6 +115,7 @@ const UploadForm = () => {
         toast("✅ Saved Successfully", {
           description: "View it in your dashboard.",
         });
+        router.push(`summaries/${saveRes.data?.summary?._id}`);
         formRef.current?.reset();
       } else {
         toast("❌ Save Failed", {

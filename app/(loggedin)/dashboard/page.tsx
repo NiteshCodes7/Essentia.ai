@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
-import { ArrowRight, Plus } from "lucide-react";
+import { ArrowRight, Loader, Plus } from "lucide-react";
 import BgGradient from "@/components/common/BgGradient";
 import Header from "@/components/common/Header";
 import SummaryCard from "@/components/summaries/summaries-card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import EmptyState from "@/components/summaries/EmptyState";
 
 export default function DashBoard() {
   const uploadLimit = 5;
@@ -41,8 +43,8 @@ export default function DashBoard() {
 
   return (
     <>
-      <Header />
       <main className="min-h-screen">
+      <Header />
         <BgGradient className="form-emrald-200 via-teal-200 to-cyan-200" />
         <div className="container mx-auto flex flex-col gap-4">
           <div className="px-2 py-12 sm:py-24">
@@ -87,23 +89,31 @@ export default function DashBoard() {
               </div>
             )}
 
-            <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 sm:px-0">
+            <div>
               {loading ? (
-                <p>Loading...</p>
+                <div className="flex justify-center items-center h-[50vh] w-full">
+                  <p className="flex gap-2">
+                    <Loader className="animate-spin" />
+                    Loading...
+                  </p>
+
+                </div>
               ) : summaries.length === 0 ? (
-                <p className="text-gray-600">No summaries yet.</p>
+                <EmptyState />
               ) : (
-                summaries.map((summary, idx) => (
-                  <SummaryCard
-                    key={idx}
-                    onDelete={(deletedId) => {
-                      setSummaries((prev) =>
-                        prev.filter((s) => s._id !== deletedId)
-                      );
-                    }}
-                    summary={summary}
-                  />
-                ))
+                <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 sm:px-0">
+                  {summaries.map((summary, idx) => (
+                    <SummaryCard
+                      key={idx}
+                      onDelete={(deletedId) => {
+                        setSummaries((prev) =>
+                          prev.filter((s) => s._id !== deletedId)
+                        );
+                      }}
+                      summary={summary}
+                    />
+                  ))}
+                </div>
               )}
             </div>
           </div>
