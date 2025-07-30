@@ -102,6 +102,7 @@ function PricingCard({
         currency: order.currency,
         name: "Essentia.AI",
         description: `${name} Plan`,
+        image: "/assets/logo.png",
         order_id: order.id,
         handler: async function (response: any) {
           await axios.post("/api/payment/verify", {
