@@ -88,7 +88,7 @@ function PricingCard({
   const handlePayment = async () => {
     try {
       const res = await axios.post("/api/payment/order", {
-        amount: price * 1,
+        amount: price * 83.5,
         currency: "INR",
         priceId: priceId,
       });
@@ -105,7 +105,6 @@ function PricingCard({
         order_id: order.id,
         handler: async function (response: any) {
           await axios.post("/api/payment/verify", {
-            id: order.id,
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_order_id: response.razorpay_order_id,
             razorpay_signature: response.razorpay_signature,

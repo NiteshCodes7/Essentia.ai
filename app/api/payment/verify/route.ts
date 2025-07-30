@@ -8,7 +8,6 @@ export async function POST(req: NextRequest) {
   await connect();
 
   const {
-    id,
     razorpay_order_id,
     razorpay_payment_id,
     razorpay_signature,
@@ -26,12 +25,9 @@ export async function POST(req: NextRequest) {
 
   if (isValid) {
     const payment = await Payment.findOneAndUpdate(
-      { id },
+      { id: razorpay_order_id },
       {
         status: "captured",
-        razorpay_payment_id: razorpay_payment_id,
-        razorpay_order_id: razorpay_order_id,
-        razorpay_signature: razorpay_signature,
         price_id: price_id,
       },
       { new: true }

@@ -48,8 +48,6 @@ export async function POST(req: NextRequest) {
       status: "pending",
     });
 
-    await payment.save();
-
     return NextResponse.json({ order, email }, { status: 200 });
 
   } catch (error: any) {
