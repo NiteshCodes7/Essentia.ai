@@ -1,7 +1,12 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { ArrowRight, CheckIcon } from "lucide-react";
-import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type Plan = {
   id: string;
@@ -17,10 +22,10 @@ const plans: Plan[] = [
   {
     id: "basic",
     name: "Basic",
-    description: "",
+    description: "For Study purposes",
     items: ["5 PDFs per month", "Standard processing speed", "Email Support"],
-    price: 5,
-    priceId: "",
+    price: 2,
+    priceId: "basic_001",
     paymentLink: "",
   },
   {
@@ -33,13 +38,20 @@ const plans: Plan[] = [
       "24/7 priority support",
       "Markdown support",
     ],
-    price: 12,
-    priceId: "",
+    price: 6,
+    priceId: "pro_001",
     paymentLink: "",
   },
 ];
 
-const PricingSection = () => {
+export default function PricingSection() {
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
+
   return (
     <section className="relative overflow-hidden" id="pricing">
       <div className="py-12 lg:py-24 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 lg:pt-12">
@@ -60,9 +72,9 @@ const PricingSection = () => {
       </div>
     </section>
   );
-};
+}
 
-const PricingCard = ({
+function PricingCard({
   id,
   name,
   description,
@@ -70,7 +82,55 @@ const PricingCard = ({
   price,
   priceId,
   paymentLink,
-}: Plan) => {
+}: Plan) {
+  const router = useRouter();
+
+  const handlePayment = async () => {
+    try {
+      const res = await axios.post("/api/payment/order", {
+        amount: price * 83.5,
+        currency: "INR",
+        priceId: priceId,
+      });
+
+      const order = res.data.order;
+      const email = res.data.email;
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
+        amount: order.amount,
+        currency: order.currency,
+        name: "Essentia.AI",
+        description: `${name} Plan`,
+        order_id: order.id,
+        handler: async function (response: any) {
+          await axios.post("/api/payment/verify", {
+            id: order.id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_signature: response.razorpay_signature,
+            email: email,
+            price_id: id,
+          });
+          toast.success("Payment successful! 🎉");
+        },
+        theme: { color: "#F84E7F" },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        toast.warning("Please log in to continue.");
+        router.push("/sign-in");
+      } else {
+        console.error("Unexpected error:", error);
+        toast.error("Something went wrong! Try again.");
+      }
+    }
+  };
+
   return (
     <div className="relative w-full max-w-lg hover:scale-105 hover:transition-all duration-300">
       <div
@@ -81,7 +141,7 @@ const PricingCard = ({
       >
         <div className="flex justify-between items-center gap-4">
           <div>
-            <p className="text-lg lg:text-xl font-bold capitialize">{name}</p>
+            <p className="text-lg lg:text-xl font-bold capitalize">{name}</p>
             <p className="text-base-content/80 mt-2 ">{description}</p>
           </div>
         </div>
@@ -103,24 +163,20 @@ const PricingCard = ({
           ))}
         </div>
 
-        <div>
-          <div className="space-y-2 flex justify-center w-full">
-            <Link
-              href={paymentLink}
-              className={cn(
-                "w-full rounded-full flex items-center justify-center gap-2 bg-linear-to-r from-rose-800  to-rose-500 hover:from-rose-500 hover:to-rose-800 text-white border-2 py-2",
-                id === "pro"
-                  ? "border-rose-900"
-                  : "border-rose-100 from-rose-400 to-rose-500"
-              )}
-            >
-              Buy Now <ArrowRight size={18} />
-            </Link>
-          </div>
+        <div className="space-y-2 flex justify-center w-full">
+          <Button
+            onClick={handlePayment}
+            className={cn(
+              "w-full rounded-full flex items-center justify-center gap-2 bg-linear-to-r from-rose-800 to-rose-500 hover:from-rose-500 hover:to-rose-800 text-white border-2 py-2",
+              id === "pro"
+                ? "border-rose-900"
+                : "border-rose-100 from-rose-400 to-rose-500"
+            )}
+          >
+            Buy Now <ArrowRight size={18} />
+          </Button>
         </div>
       </div>
     </div>
   );
-};
-
-export default PricingSection;
+}

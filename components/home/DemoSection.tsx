@@ -1,5 +1,49 @@
 import { Pizza } from "lucide-react";
 import React from "react";
+import SummaryViewer from "../summaries/SummaryViewer";
+
+const summary = `
+# 📁 Instant File Summarizer
+
+• 🪄 Quickly transform uploaded documents into easy-to-read summaries
+• 📌 Designed to simplify content, save time, and boost productivity
+
+# Document Details
+
+• 📄 Type: App Demo Metadata
+• 👥 For: Users summarizing uploaded files
+
+# Key Highlights
+
+• ✍️ Tracks file name, word count, and upload date automatically
+• 💡 Summarizes documents using AI-generated digest text
+• 🧠 Provides direct access to original files via URL
+
+# Why It Matters
+
+• 🌍 This demo showcases how your app makes it effortless to extract key insights from large documents — ideal for students, professionals, and content creators who need information fast.
+
+# Main Points
+
+• 🔍 Every file is uniquely identified and timestamped
+• 🧩 All file data and summaries are stored together for easy retrieval
+• 📈 Helps users distill lengthy content into key takeaways instantly
+
+# Pro Tips
+
+• 🛠️ Use summaries as preview content in social or internal tools
+• 💎 Include word count to estimate reading or processing time
+• 🎯 Make use of original file links for source verification and sharing
+
+# Key Terms to Know
+
+• 🧠 summary_text: The auto-generated summary of the document
+• 🧠 created_at: When the file was uploaded and processed
+
+# Bottom Line
+
+• 🧵 This demo illustrates the core value of your app: turning documents into digestible, useful insights in seconds
+`
 
 const DemoSection = () => {
   return (
@@ -33,7 +77,7 @@ const DemoSection = () => {
           </div>
 
           <div className="flex justify-center items-center px-2 sm:px-4 lg:px-6">
-            {/* Summary Viewer */}
+            <SummaryViewer summary={summary} />
           </div>
         </div>
       </div>
