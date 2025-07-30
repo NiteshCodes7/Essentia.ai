@@ -88,7 +88,7 @@ function PricingCard({
   const handlePayment = async () => {
     try {
       const res = await axios.post("/api/payment/order", {
-        amount: price * 83.5,
+        amount: price * 1,
         currency: "INR",
         priceId: priceId,
       });
