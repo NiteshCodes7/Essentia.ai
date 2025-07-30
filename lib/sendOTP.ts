@@ -19,7 +19,7 @@ export const sendOtpEmail = async (email: string, otp?: string, razorpay_payment
         <h2>Payment Confirmation</h2>
         <p>Thank you for your payment!</p>
         <p><strong>Payment ID:</strong> ${razorpay_payment_id}</p>
-        <p><strong>Plan:</strong> ${price_id.includes("basic_001") ? "Basic Plan" : "Pro Plan"}</p>
+        <p><strong>Plan:</strong> ${price_id.includes("basic") ? "Basic Plan" : "Pro Plan"}</p>
         <p>Your subscription has been activated successfully.</p>
       </div>
     `;

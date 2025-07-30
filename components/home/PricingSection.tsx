@@ -121,7 +121,7 @@ function PricingCard({
       rzp.open();
 
     } catch (error: any) {
-      if (error.response?.status === 401) {
+      if (error.response?.status === 404) {
         toast.warning("Please log in to continue.");
         router.push("/sign-in");
       } else {
