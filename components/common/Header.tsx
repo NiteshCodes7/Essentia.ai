@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import PlanBadge from "./PlanBadge";
+import { getUserPlan } from "@/lib/getUserPlan";
 
 type User = {
   full_name: string;
@@ -23,9 +24,17 @@ type User = {
   avatar?: string;
 };
 
+const uploadLimit: Record<string, number> = {
+  free: 2,
+  basic: 10,
+  pro: Infinity,
+};
+
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [summaries, setSummaries] = useState<any[]>([]);
+  const [limit, setLimit] = useState<number>(2);
   const router = useRouter();
 
   const handleLogOut = async () => {
@@ -46,10 +55,22 @@ const Header = () => {
   useEffect(() => {
     const checkLoginStatus = async () => {
       try {
-        const res = await axios.get("/api/check-auth", { withCredentials: true });
+        const res = await axios.get("/api/check-auth", {
+          withCredentials: true,
+        });
         if (res.status === 200 && res.data.loggedIn) {
+          const email = res.data?.user?.email;
+          const id = res.data?.user?._id;
           setUser(res.data.user);
           setIsLoggedIn(true);
+
+          const summaryRes = await axios.post("/api/get-summary", { id });
+          if (summaryRes.status === 200) {
+            setSummaries(summaryRes.data?.summaries || []);
+          }
+
+          const userPlan = await getUserPlan(email);
+          setLimit(uploadLimit[userPlan]);
         } else {
           setIsLoggedIn(false);
         }
@@ -90,11 +111,19 @@ const Header = () => {
       <div className="flex lg:justify-end lg:flex-1">
         {isLoggedIn ? (
           <div className="flex items-center gap-5">
-            <NavLink href="/upload" className="hidden md:block">
-              Upload a PDF
-            </NavLink>
+            {summaries.length < limit ? (
+              <NavLink href="/upload" className="hidden md:block">
+                Upload a PDF
+              </NavLink>
+            ) : (
+              <NavLink href="/#pricing" className="hidden md:block">
+                Upgrade
+              </NavLink>
+            )}
 
-            <div className="hidden md:block"><PlanBadge/></div>
+            <div className="hidden md:block">
+              <PlanBadge />
+            </div>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -125,10 +154,18 @@ const Header = () => {
                 <DropdownMenuSeparator />
 
                 <DropdownMenuItem className="block md:hidden">
-                  <NavLink href="/upload">Upload a PDF</NavLink>
+                  {summaries.length < limit ? (
+                    <NavLink href="/upload" className="hidden md:block">
+                      Upload a PDF
+                    </NavLink>
+                  ) : (
+                    <NavLink href="/#pricing" className="hidden md:block">
+                      Upgrade
+                    </NavLink>
+                  )}
                 </DropdownMenuItem>
                 <DropdownMenuItem className="block md:hidden">
-                  <PlanBadge/>
+                  <PlanBadge />
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="block md:hidden" />
                 <DropdownMenuItem

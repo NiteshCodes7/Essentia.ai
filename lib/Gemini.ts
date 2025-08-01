@@ -31,7 +31,6 @@ export async function generateSummary(pdfText: string) {
     if(result === ""){
         throw new Error("No response from AI");
     }
-    console.log(result);
 
     return result;
 

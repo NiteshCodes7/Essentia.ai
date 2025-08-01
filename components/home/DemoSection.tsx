@@ -1,6 +1,7 @@
 import { Pizza } from "lucide-react";
 import React from "react";
 import SummaryViewer from "../summaries/SummaryViewer";
+import { MotionDiv, MotionH3 } from "@/components/common/motion-wrapper";
 
 const summary = `
 # 📁 Instant File Summarizer
@@ -43,7 +44,7 @@ const summary = `
 # Bottom Line
 
 • 🧵 This demo illustrates the core value of your app: turning documents into digestible, useful insights in seconds
-`
+`;
 
 const DemoSection = () => {
   return (
@@ -67,18 +68,28 @@ const DemoSection = () => {
             <Pizza className="w-6 h-6 text-rose-500" />
           </div>
           <div className="text-center mb-16">
-            <h3 className="font-bold text-3xl max-w-2xl mx-auto px-4 sm:px-6">
+            <MotionH3
+              initial={{ y: 20, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="font-bold text-3xl max-w-2xl mx-auto px-4 sm:px-6"
+            >
               Watch how Essentia.ai transforms{" "}
               <span className="bg-linear-to-r from-rose-500 to-rose-700 bg-clip-text text-transparent">
                 this Next.js course
               </span>{" "}
               PDF into an easy to read summary!
-            </h3>
+            </MotionH3>
           </div>
 
-          <div className="flex justify-center items-center px-2 sm:px-4 lg:px-6">
+          <MotionDiv
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="flex justify-center items-center px-2 sm:px-4 lg:px-6"
+          >
             <SummaryViewer summary={summary} />
-          </div>
+          </MotionDiv>
         </div>
       </div>
     </section>

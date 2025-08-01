@@ -9,6 +9,7 @@ import BgGradient from "@/components/common/BgGradient";
 import SummaryHeader from "@/components/summaries/summary-header";
 import SourceInfo from "@/components/summaries/SourceInfo";
 import SummaryViewer from "@/components/summaries/SummaryViewer";
+import { MotionDiv } from "@/components/common/motion-wrapper";
 
 type Status = {
   _id: string;
@@ -20,11 +21,10 @@ type Status = {
   created_at: Date;
 };
 
-
 const SummaryPage = () => {
   const params = useParams();
   const id = params?.id as string;
-  
+
   const [summary, setSummary] = useState<Status | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
@@ -63,10 +63,16 @@ const SummaryPage = () => {
 
   if (!summary) return null;
 
-  const { title, original_file_url, summary_text, file_name, word_count, created_at } = summary;
+  const {
+    title,
+    original_file_url,
+    summary_text,
+    file_name,
+    word_count,
+    created_at,
+  } = summary;
 
   const reading_time = Math.ceil((word_count || 0) / 200);
-
 
   return (
     <>
@@ -75,14 +81,36 @@ const SummaryPage = () => {
         <BgGradient className="from-rose-400 via-rose-300 to-orange-200" />
         <div className="container mx-auto flex flex-col gap-4">
           <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-12 lg:py-24">
-            <div className="flex flex-col">
+            <MotionDiv
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="flex flex-col"
+            >
               {/* Summary Header */}
-              <SummaryHeader title={title} created_at={created_at} reading_time={reading_time} />
-            </div>
+              <SummaryHeader
+                title={title}
+                created_at={created_at}
+                reading_time={reading_time}
+              />
+            </MotionDiv>
             {/* SourceInfo */}
-            {file_name && <SourceInfo file_name={file_name} original_file_url={original_file_url} title={title} summary_text={summary_text} created_at={created_at} />}
+            {file_name && (
+              <SourceInfo
+                file_name={file_name}
+                original_file_url={original_file_url}
+                title={title}
+                summary_text={summary_text}
+                created_at={created_at}
+              />
+            )}
           </div>
-          <div className="relative mt-4 sm:mt-8">
+          <MotionDiv
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="relative mt-4 sm:mt-8"
+          >
             <div className="relative p-4 sm:p-6 lg:p-8 bg-white/80 backdrop-blur-md rounded-2xl sm:rounded-3xl shadow-xl border border-rose-100/30 transition-all duration-300 hover:shadow-2xl hover:bg-white/90 max-w-4xl mx-auto">
               <div className="absolute inset-0 bg-gradient-to-br from-rose-50/50 via-orange-50/30 to-transparent opacity-50 rounded-2xl sm:rounded-3xl" />
 
@@ -95,7 +123,7 @@ const SummaryPage = () => {
                 <SummaryViewer summary={summary_text} />
               </div>
             </div>
-          </div>
+          </MotionDiv>
         </div>
       </div>
     </>

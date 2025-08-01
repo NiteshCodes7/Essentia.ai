@@ -1,4 +1,6 @@
 import React from "react";
+import { MotionDiv } from "@/components/common/motion-wrapper";
+import { containerVariants } from "@/lib/constant";
 
 const ContentSection = ({
   title,
@@ -8,7 +10,14 @@ const ContentSection = ({
   points: string[];
 }) => {
   return (
-    <div className="space-y-4">
+    <MotionDiv
+      variants={containerVariants}
+      key={points.join("")}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      className="space-y-4"
+    >
       {points.map((point, idx) => (
         <div
           key={`${point}-${idx}`}
@@ -19,7 +28,7 @@ const ContentSection = ({
           </p>
         </div>
       ))}
-    </div>
+    </MotionDiv>
   );
 };
 

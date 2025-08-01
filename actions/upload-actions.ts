@@ -41,7 +41,6 @@ export const generatePdfSummary = async (
 
   try {
     const pdfText = await fetchAndExtractPdfText(pdfUrl);
-    console.log(pdfText);
 
     let summary;
     try {

@@ -1,8 +1,9 @@
 "use client";
 
-
 import React, { useEffect, useState } from "react";
 import PricingCard from "./PricingCard";
+import { MotionDiv, MotionSection } from "@/components/common/motion-wrapper";
+import { containerVariants, itemVariants } from "@/lib/constant";
 
 export type Plan = {
   id: string;
@@ -26,7 +27,11 @@ const plans: Plan[] = [
       "Basic Plan – ₹99/month with duration of 3 months. Cancel anytime.",
     ],
     price: 99,
-    priceId: `${process.env.NEXT_PUBLIC_NODE_ENV !== "production" ? "plan_QzjUz08jdPhmIw" : "plan_QzjhUWcUutFRK7"}` ,
+    priceId: `${
+      process.env.NEXT_PUBLIC_NODE_ENV !== "production"
+        ? "plan_QzjUz08jdPhmIw"
+        : "plan_QzjhUWcUutFRK7"
+    }`,
     paymentLink: "",
   },
   {
@@ -41,7 +46,11 @@ const plans: Plan[] = [
       "Pro Plan – ₹149/month with duration of 3 months. Cancel anytime.",
     ],
     price: 149,
-    priceId: `${process.env.NEXT_PUBLIC_NODE_ENV !== "production" ? "plan_QzjVPTntbWXAP5" : "plan_QzjkX1FGRHP7kA"}`,
+    priceId: `${
+      process.env.NEXT_PUBLIC_NODE_ENV !== "production"
+        ? "plan_QzjVPTntbWXAP5"
+        : "plan_QzjkX1FGRHP7kA"
+    }`,
     paymentLink: "",
   },
 ];
@@ -55,25 +64,30 @@ export default function PricingSection() {
   }, []);
 
   return (
-    <section className="relative overflow-hidden" id="pricing">
+    <MotionSection
+      variants={containerVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-100px" }}
+      className="relative overflow-hidden"
+      id="pricing"
+    >
       <div className="py-12 lg:py-24 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 lg:pt-12">
-        <div className="text-center pb-12">
+        <MotionDiv variants={itemVariants} className="text-center pb-12">
           <h2 className="uppercase font-bold text-xl mb-2 text-rose-500">
             Pricing
           </h2>
           <p className="text-muted-foreground">
             Choose the plan that fits your needs.
           </p>
-        </div>
+        </MotionDiv>
 
-        <div className="relative flex flex-col lg:flex-row justify-center items-stretch gap-8">
+        <MotionDiv variants={itemVariants} className="relative flex flex-col lg:flex-row justify-center items-stretch gap-8">
           {plans.map((plan) => (
             <PricingCard key={plan.id} {...plan} />
           ))}
-        </div>
+        </MotionDiv>
       </div>
-    </section>
+    </MotionSection>
   );
 }
-
-
