@@ -44,7 +44,7 @@ const Header = () => {
         setIsLoggedIn(false);
         setUser(null);
         toast(res.data.message);
-        router.push("/sign-in");
+        router.push("/");
       }
     } catch (error) {
       toast("❌ Failed to logout");
