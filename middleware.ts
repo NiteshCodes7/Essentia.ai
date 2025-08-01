@@ -1,19 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
-  const isPublicPath =
-    path === "/sign-in" || path === "/sign-up" || path === "/verify-otp";
+  const isPublicPath = path === "/sign-in" || path === "/sign-up" || path === "/verify-otp";
 
   const token = request.cookies.get("session")?.value || "";
 
   if (isPublicPath && token) {
-    return NextResponse.redirect(new URL('/dashboard', request.nextUrl));
+    return NextResponse.redirect(new URL("/", request.nextUrl));
   }
 
-  if (isPublicPath && token && path !== "/sign-in") {
-
+  if (!isPublicPath && !token && path !== "/") {
     return NextResponse.redirect(new URL("/sign-in", request.nextUrl));
   }
 
@@ -22,6 +20,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    "/((?!api|_next/static|_next/image|favicon.ico|logo.png).*)",
   ],
 };
