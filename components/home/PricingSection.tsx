@@ -27,11 +27,7 @@ const plans: Plan[] = [
       "Basic Plan – ₹99/month with duration of 3 months. Cancel anytime.",
     ],
     price: 99,
-    priceId: `${
-      process.env.NEXT_PUBLIC_NODE_ENV !== "production"
-        ? "plan_QzjUz08jdPhmIw"
-        : "plan_QzjhUWcUutFRK7"
-    }`,
+    priceId: "plan_QzjhUWcUutFRK7",
     paymentLink: "",
   },
   {
@@ -46,11 +42,7 @@ const plans: Plan[] = [
       "Pro Plan – ₹149/month with duration of 3 months. Cancel anytime.",
     ],
     price: 149,
-    priceId: `${
-      process.env.NEXT_PUBLIC_NODE_ENV !== "production"
-        ? "plan_QzjVPTntbWXAP5"
-        : "plan_QzjkX1FGRHP7kA"
-    }`,
+    priceId: "plan_QzjkX1FGRHP7kA",
     paymentLink: "",
   },
 ];
