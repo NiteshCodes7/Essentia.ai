@@ -1,5 +1,4 @@
 import BgGradient from "@/components/common/BgGradient";
-import Footer from "@/components/common/Footer";
 import Header from "@/components/common/Header";
 import CTASection from "@/components/home/CTASection";
 import DemoSection from "@/components/home/DemoSection";
@@ -23,7 +22,6 @@ export default function Home() {
         </div>
 
       </div>
-      <Footer />
     </>
   );
 }
