@@ -1,9 +1,15 @@
-import { Schema, model, Document, models } from 'mongoose';
+import { Schema, model, Document, models, Types } from 'mongoose';
+import { boolean } from 'zod';
 
 export interface IPayment extends Document {
-  id?: string,
+  subscription_id?: string;
+  user_id: Types.ObjectId;
+  plan_id?: string;
+  type?: string;
   amount?: number;
+  currency?: string;
   status?: string;
+  isNotCancelled?: boolean;
   razorPay_payment_id?: string;
   price_id?: string;
   user_email: string;
@@ -15,9 +21,14 @@ export interface IPayment extends Document {
 }
 
 const paymentSchema = new Schema<IPayment>({
-  id: { type: String },
+  subscription_id: { type: String },
+  user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  plan_id: { type: String },
+  type: { type: String },
   amount: { type: Number },
+  currency: { type: String },
   status: { type: String },
+  isNotCancelled: { type: Boolean, default: true},
   razorPay_payment_id: { type: String },
   price_id: { type: String },
   user_email: { type: String, required: true },

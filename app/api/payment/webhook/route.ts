@@ -1,56 +1,71 @@
-import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import getRawBody from "raw-body";
+import { NextRequest, NextResponse } from "next/server";
+import { connect } from "@/db/config";
 import { Payment } from "@/models/Payment.model";
+import { updateSubscriptionStatus } from "@/lib/updateSubscriptionStatus";
+import getRawBody from "raw-body";
 
 export async function POST(req: NextRequest) {
+  await connect();
+
+  // Get raw body and headers
   const rawBody = await getRawBody(req.body as any);
+  const signature = req.headers.get("x-razorpay-signature");
 
-  const razorpaySignature = req.headers.get("x-razorpay-signature");
   const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET!;
+  if (!signature || !webhookSecret) {
+    return new NextResponse("Unauthorized", { status: 401 });
+  }
 
-  // Generate expected signature
+  // Verify signature
   const expectedSignature = crypto
     .createHmac("sha256", webhookSecret)
     .update(rawBody)
     .digest("hex");
 
-  // Verify signature
-  if (expectedSignature !== razorpaySignature) {
-    console.error("❌ Webhook signature mismatch!");
+  if (expectedSignature !== signature) {
+    console.error("❌ Webhook signature mismatch");
     return new NextResponse("Invalid signature", { status: 400 });
   }
 
-  const bodyJson = JSON.parse(rawBody.toString("utf-8"));
+  // Parse event body
+  const eventBody = JSON.parse(rawBody.toString("utf-8"));
+  const event = eventBody.event;
 
-  if (bodyJson.event === "payment.captured") {
-    const paymentDetails = bodyJson.payload.payment.entity;
+  try {
+    // 🎯 Handle Subscription Events
+    if (event === "subscription.activated") {
+      const subscription = eventBody.payload.subscription.entity;
+      await updateSubscriptionStatus(subscription.id, "active");
+    }
 
-    const payment = await Payment.findOneAndUpdate(
-      { id: paymentDetails.order_id },
-      {
-        status: "captured",
-        captured_at: new Date(),
-      }
-    );
+    if (event === "subscription.cancelled") {
+      const subscription = eventBody.payload.subscription.entity;
+      await updateSubscriptionStatus(subscription.id, "cancelled");
+    }
 
-    await payment.save();
-  }
+    if (event === "subscription.completed") {
+      const subscription = eventBody.payload.subscription.entity;
+      await updateSubscriptionStatus(subscription.id, "expired");
+    }
 
-  if(bodyJson.event === "payment.failed"){
-    const paymentFailedDetails = bodyJson.payload.entity.order_id;
+    // 🎯 Handle Payment Failure
+    if (event === "payment.failed") {
+      const payment = eventBody.payload.payment.entity;
 
-    const payment = await Payment.findByIdAndUpdate(
-        { id: paymentFailedDetails.order_id },
+      await Payment.findOneAndUpdate(
+        { razorPay_payment_id: payment.id },
         {
-            status: "failed",
-            reason: paymentFailedDetails.error_description || "Unknown failure",
-            failed_at: new Date(),
+          status: "failed",
+          reason: payment.error_description || "Unknown",
+          failed_at: new Date(),
         }
-    )
+      );
+    }
 
-    await payment.save();
+    return new NextResponse("Webhook processed", { status: 200 });
+  } catch (error) {
+    console.error("❌ Error processing webhook:", error);
+    return new NextResponse("Error processing webhook", { status: 500 });
   }
-
-  return new NextResponse("Webhook received", { status: 200 });
 }

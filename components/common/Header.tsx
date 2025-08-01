@@ -15,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import PlanBadge from "./PlanBadge";
 
 type User = {
   full_name: string;
@@ -93,7 +94,7 @@ const Header = () => {
               Upload a PDF
             </NavLink>
 
-            <div className="hidden md:block">Pro</div>
+            <div className="hidden md:block"><PlanBadge/></div>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -127,7 +128,7 @@ const Header = () => {
                   <NavLink href="/upload">Upload a PDF</NavLink>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="block md:hidden">
-                  Pro
+                  <PlanBadge/>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="block md:hidden" />
                 <DropdownMenuItem
