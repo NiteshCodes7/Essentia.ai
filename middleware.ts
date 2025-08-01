@@ -12,7 +12,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', request.nextUrl));
   }
 
-  if (!isPublicPath && !token && path !== "/") {
+  if (isPublicPath && token && path !== "/sign-in") {
+
     return NextResponse.redirect(new URL("/sign-in", request.nextUrl));
   }
 
