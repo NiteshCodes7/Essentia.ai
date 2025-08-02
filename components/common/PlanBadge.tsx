@@ -153,7 +153,7 @@ const PlanBadge = () => {
             <Crown className="w-3 h-3 mr-1 text-amber-600" />
             {planType === "pro" ? "Pro" : "Basic"}{" "}
             <Image
-              src="/assets/dropdown.png"
+              src="/dropdown.png"
               alt="dropdown"
               width={5}
               height={5}
