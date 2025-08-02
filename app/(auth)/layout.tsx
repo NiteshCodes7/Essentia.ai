@@ -9,7 +9,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div className="hidden md:flex md:flex-col md:w-1/2 bg-gradient-to-br from-slate-900 to-rose-500 text-white p-10 justify-center space-y-6 relative transition-all duration-300 rounded-r-4xl h-screen">
         <div className="flex flex-col items-center text-center space-y-2">
           <Image
-            src={"/assets/logo.png"}
+            src={"/logo.png"}
             alt="Essentia Logo"
             width={120}
             height={120}
@@ -28,7 +28,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
       {/* Right Side: Auth Form */}
       <div className="flex flex-col w-full md:w-1/2 justify-center items-center p-6 sm:p-8 bg-slate-300/30 md:h-screen">
-        <Image src={"/assets/logo.png"} alt="Essentia logo" width={100} height={100} className="block md:hidden m-5 w-[100px] h-[100px]"/>
+        <Image src={"/logo.png"} alt="Essentia logo" width={100} height={100} className="block md:hidden m-5 w-[100px] h-[100px]"/>
         <div className="w-full max-w-md">
           {children}
         </div>
