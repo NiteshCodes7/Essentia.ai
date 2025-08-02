@@ -50,7 +50,7 @@ const UploadFormInput = forwardRef<HTMLFormElement, UploadFormInputProps>(
       checkLoginStatus();
     }, []);
 
-    let isValid = summaries.length > limit;
+    const isValid = summaries.length >= limit;
     return (
       <form onSubmit={onSubmit} ref={ref} className="flex flex-col gap-6">
         <MotionDiv
