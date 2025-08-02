@@ -27,11 +27,14 @@ Essentia.ai is a **SaaS web application** that converts PDF documents into short
 | File Upload| `uploadthing`                                               |
 | Payments   | `Razorpay`                                                  |
 | AI Engine  | `Gemini API`, `LangChain`                                   |
-| Video      | `FFmpeg` or browser-based text rendering                    |
+| Database   | `MongoDB` (with `mongoose`)                                 |
+| Deployment | `Vercel`                |
 
 ---
 
 ## 🧩 Project Structure
+
+![Architecture](./public/assets/architecture.png)
 
 [![View Diagram](https://img.shields.io/badge/View%20Architecture-Eraser.io-7B68EE?logo=eraser)](https://app.eraser.io/workspace/SkEIR69bxJ2OFuloS3Wf?origin=share)
 
