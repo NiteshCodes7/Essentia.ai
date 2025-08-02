@@ -106,7 +106,7 @@ const PlanBadge = () => {
           <Crown className="w-3.5 h-3.5" />
           Free Trial
           <Image
-            src="/assets/dropdown.png"
+            src="/dropdown.png"
             alt="dropdown"
             width={8}
             height={8}

@@ -44,7 +44,8 @@ const Header = () => {
         setIsLoggedIn(false);
         setUser(null);
         toast(res.data.message);
-        router.push("/");
+        router.push("/sign-in");
+        router.refresh();
       }
     } catch (error) {
       toast("❌ Failed to logout");
@@ -94,7 +95,7 @@ const Header = () => {
       <div className="flex lg:flex-1">
         <NavLink href="/">
           <Image
-            src="/assets/logo.png"
+            src="/logo.png"
             alt="logo"
             width={70}
             height={70}

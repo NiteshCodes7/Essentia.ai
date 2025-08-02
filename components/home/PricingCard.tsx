@@ -46,7 +46,7 @@ export default function PricingCard({
         currency: planDetails.item.currency,
         name: "Essentia.AI",
         description: `${name} Plan – ₹${amount}/month for 3 months. Cancel anytime.`,
-        image: "https://essentia-ai.vercel.app/assets/logo.png",
+        image: "/logo.png",
         handler: async function (response: any) {
           await axios.post("/api/payment/verify", {
             razorpay_payment_id: response.razorpay_payment_id,
