@@ -1,22 +1,24 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
-  const isAuthPage = 
-    path === "/sign-in" || 
-    path === "/sign-up" || 
-    path === "/verify-otp";
+  const publicPaths = [
+    "/",
+    "/sign-in",
+    "/sign-up",
+    "/verify-otp",
+  ];
 
-  const isPublicAsset = path.startsWith("/public");
-  
+  const isPublic = publicPaths.includes(path) || path.startsWith("/public");
+
   const token = request.cookies.get("session")?.value;
 
-  if (token && isAuthPage) {
+  if (token && ["/sign-in", "/sign-up", "/verify-otp"].includes(path)) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  if (isAuthPage || isPublicAsset) {
+  if (isPublic) {
     return NextResponse.next();
   }
 
@@ -24,12 +26,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
-  // ✅ Allow access to protected routes if logged in
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
-  ],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };
