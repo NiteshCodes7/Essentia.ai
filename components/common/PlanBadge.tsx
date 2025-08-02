@@ -66,6 +66,14 @@ const PlanBadge = () => {
         });
 
         if (res.data.subscription === true) {
+          const expiry = new Date(res.data.expiryDate);
+          const now = new Date();
+
+          if (expiry < now) {
+            setStatus("none");
+            return;
+          }
+
           setStatus(res.data.status);
           setPlanType(res.data.subscribed.price_id);
           setSubscriptionId(res.data.subscribed.subscription_id);
