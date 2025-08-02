@@ -1,12 +1,13 @@
 import { cn } from "@/lib/utils";
 import axios from "axios";
-import { CheckIcon, ArrowRight } from "lucide-react";
+import { CheckIcon, ArrowRight, Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Plan } from "./PricingSection";
 import { MotionDiv } from "@/components/common/motion-wrapper";
 import { Variants } from "motion";
+import { useState } from "react";
 
 const listVariants: Variants = {
   hidden: { opacity: 0, x: -20 },
@@ -27,9 +28,11 @@ export default function PricingCard({
   paymentLink,
 }: Plan) {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handlePayment = async () => {
     try {
+      setIsLoading(true);
       const res = await axios.post("/api/payment/subscription", {
         priceId: priceId,
       });
@@ -68,9 +71,12 @@ export default function PricingCard({
         toast.warning("Please log in to continue.");
         router.push("/sign-in");
       } else {
+        setIsLoading(false);
         console.error("Unexpected error:", error);
         toast.error("Something went wrong! Try again.");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -122,12 +128,21 @@ export default function PricingCard({
         >
           <Button
             onClick={handlePayment}
+            disabled={isLoading}
             className={cn(
               "w-full rounded-full flex items-center justify-center gap-2 bg-gradient-to-r from-rose-800 to-rose-500 hover:from-rose-500 hover:to-rose-800 text-white border-2 py-2",
               id === "pro" ? "border-rose-900" : "border-rose-100"
             )}
           >
-            Buy Now <ArrowRight size={18} />
+            {isLoading ? (
+              <>
+                <Loader className="animate-spin" size={18} /> Processing...
+              </>
+            ) : (
+              <>
+                Buy Now <ArrowRight size={18} />{" "}
+              </>
+            )}
           </Button>
         </MotionDiv>
       </div>

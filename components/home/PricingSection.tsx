@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import PricingCard from "./PricingCard";
 import { MotionDiv, MotionSection } from "@/components/common/motion-wrapper";
 import { containerVariants, itemVariants } from "@/lib/constant";
