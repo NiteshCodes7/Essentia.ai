@@ -3,22 +3,28 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
-  const isPublicPath = 
+  const isAuthPage = 
     path === "/sign-in" || 
     path === "/sign-up" || 
-    path === "/verify-otp" || 
-    path.startsWith("/public");
+    path === "/verify-otp";
 
+  const isPublicAsset = path.startsWith("/public");
+  
   const token = request.cookies.get("session")?.value;
 
-  if (token && (path === "/sign-in" || path === "/sign-up" || path === "/verify-otp")) {
+  if (token && isAuthPage) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  if (!token && !isPublicPath) {
+  if (isAuthPage || isPublicAsset) {
+    return NextResponse.next();
+  }
+
+  if (!token) {
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
+  // ✅ Allow access to protected routes if logged in
   return NextResponse.next();
 }
 
